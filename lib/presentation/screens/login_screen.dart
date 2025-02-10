@@ -4,6 +4,7 @@ import 'package:stock_market_app/presentation/screens/stock_search_screen.dart';
 import '../blocs/auth_bloc/auth_bloc.dart';
 import '../blocs/auth_bloc/auth_event.dart';
 import '../blocs/auth_bloc/auth_state.dart';
+import '../widgets/snackbar_helper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,7 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void login(BuildContext context) {
     final identifier = emailController.text.trim();
     final password = passwordController.text.trim();
-    context.read<AuthBloc>().add(Login(identifier: identifier, password: password));
+    context
+        .read<AuthBloc>()
+        .add(Login(identifier: identifier, password: password));
   }
 
   @override
@@ -35,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (context) => const StockSearchScreen()),
             );
           } else if (state is AuthFailure) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(state.error)));
+            SnackbarHelper.showSnackbar(context,
+                message: "Login failed!", backgroundColor: Colors.blue);
           }
         },
         child: Center(

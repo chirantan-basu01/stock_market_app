@@ -16,11 +16,10 @@ class StockDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Stock Details",
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
+        title: const Text(
+          "Stock Details",
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: Colors.blueAccent,
         elevation: 0,
@@ -53,7 +52,8 @@ class StockDetailsScreen extends StatelessWidget {
                                     fontSize: 26, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
                             Text("Symbol: ${stock.symbol}",
-                                style: const TextStyle(fontSize: 18, color: Colors.grey)),
+                                style: const TextStyle(
+                                    fontSize: 18, color: Colors.grey)),
                           ],
                         ),
                       ),
@@ -66,9 +66,12 @@ class StockDetailsScreen extends StatelessWidget {
                             style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold)),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: stock.change >= 0 ? Colors.green[100] : Colors.red[100],
+                            color: stock.change >= 0
+                                ? Colors.green[100]
+                                : Colors.red[100],
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -76,7 +79,9 @@ class StockDetailsScreen extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: stock.change >= 0 ? Colors.green[800] : Colors.red[800]),
+                                color: stock.change >= 0
+                                    ? Colors.green[800]
+                                    : Colors.red[800]),
                           ),
                         ),
                       ],
@@ -154,8 +159,6 @@ class StockDetailsScreen extends StatelessWidget {
     );
   }
 }
-
-
 
 Widget _buildLoadingShimmer() {
   return ListView.builder(
