@@ -18,10 +18,33 @@ class StockSearchScreen extends StatefulWidget {
 class _StockSearchScreenState extends State<StockSearchScreen> {
   final TextEditingController searchController = TextEditingController();
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    searchController.addListener(() {
+      final query = searchController.text.trim();
+      if (query.isEmpty) {
+        context.read<StockBloc>().add(ClearStocks());
+      } else {
+        searchStocks(context);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+
   void searchStocks(BuildContext context) {
-    final query = searchController.text;
-    if (query.isNotEmpty) {
+    final query = searchController.text.trim();
+    if (query.isEmpty) {
       context.read<StockBloc>().add(ClearStocks());
+    } else {
       context.read<StockBloc>().add(SearchStocks(query: query));
     }
   }
@@ -30,7 +53,11 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Stock Search", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        title: const Text("Stock Search",
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white)),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
@@ -63,7 +90,8 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
                 onChanged: (_) => searchStocks(context),
                 decoration: InputDecoration(
                   labelText: "Search Stocks",
-                  prefixIcon: const Icon(Icons.search, color: Colors.blueAccent),
+                  prefixIcon:
+                      const Icon(Icons.search, color: Colors.blueAccent),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -80,11 +108,14 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is StockFailure) {
                     return Center(
-                      child: Text(state.error, style: const TextStyle(color: Colors.red, fontSize: 16)),
+                      child: Text(state.error,
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 16)),
                     );
                   } else if (state is StockSuccess) {
                     return ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       itemCount: state.stocks.length,
                       itemBuilder: (context, index) {
                         return Card(
@@ -99,7 +130,9 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
                     );
                   }
                   return const Center(
-                    child: Text("Search for stocks", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                    child: Text("Search for stocks",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500)),
                   );
                 },
               ),
