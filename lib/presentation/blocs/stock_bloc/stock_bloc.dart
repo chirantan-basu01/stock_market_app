@@ -9,6 +9,7 @@ class StockBloc extends Bloc<StockEvent, StockState> {
   final StockRepository stockRepository;
 
   StockBloc({required this.stockRepository}) : super(StockInitial()) {
+
     on<SearchStocks>((event, emit) async {
       emit(StockLoading());
 
@@ -20,5 +21,10 @@ class StockBloc extends Bloc<StockEvent, StockState> {
         log('Error in stock bloc : ${e.toString()}');
       }
     });
+
+    on<ClearStocks>((event, emit) {
+      emit(StockInitial());
+    });
+
   }
 }

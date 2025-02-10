@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_market_app/presentation/blocs/auth_bloc/auth_bloc.dart';
+import 'package:stock_market_app/presentation/blocs/auth_bloc/auth_event.dart';
 import 'package:stock_market_app/presentation/blocs/stock_bloc/stock_bloc.dart';
 import 'package:stock_market_app/presentation/screens/login_screen.dart';
 import 'data/repositories/auth_repository.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AuthBloc(authRepository: AuthRepository())),
+        BlocProvider(create: (context) => AuthBloc(authRepository: AuthRepository())..add(CheckLoginStatus())),
         BlocProvider(create: (context) => StockBloc(stockRepository: StockRepository())),
       ],
       child: const MaterialApp(
