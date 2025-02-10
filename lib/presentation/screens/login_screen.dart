@@ -19,9 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void login(BuildContext context) {
     final identifier = emailController.text.trim();
     final password = passwordController.text.trim();
-    context
-        .read<AuthBloc>()
-        .add(Login(identifier: identifier, password: password));
+    context.read<AuthBloc>().add(Login(identifier: identifier, password: password));
   }
 
   @override

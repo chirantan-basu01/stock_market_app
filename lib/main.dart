@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stock_market_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:stock_market_app/presentation/blocs/auth_bloc/auth_event.dart';
 import 'package:stock_market_app/presentation/blocs/stock_bloc/stock_bloc.dart';
+import 'package:stock_market_app/presentation/blocs/stock_details_bloc/stock_details_bloc.dart';
 import 'package:stock_market_app/presentation/screens/login_screen.dart';
 import 'data/repositories/auth_repository.dart';
 import 'data/repositories/stock_repository.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => AuthBloc(authRepository: AuthRepository())..add(CheckLoginStatus())),
         BlocProvider(create: (context) => StockBloc(stockRepository: StockRepository())),
+        BlocProvider(create: (context) => StockDetailsBloc(stockRepository: StockRepository())),
       ],
       child: const MaterialApp(
         title: 'Stock Market App',

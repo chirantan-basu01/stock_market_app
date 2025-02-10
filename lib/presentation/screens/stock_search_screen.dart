@@ -24,7 +24,7 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
     super.initState();
 
     searchController.addListener(() {
-      final query = searchController.text.trim();
+      final query = searchController.text;
       if (query.isEmpty) {
         context.read<StockBloc>().add(ClearStocks());
       } else {
@@ -41,7 +41,7 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
 
 
   void searchStocks(BuildContext context) {
-    final query = searchController.text.trim();
+    final query = searchController.text;
     if (query.isEmpty) {
       context.read<StockBloc>().add(ClearStocks());
     } else {

@@ -16,7 +16,7 @@ class StockItem extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => StockDetailsScreen(stockName: stock.name)),
+          MaterialPageRoute(builder: (_) => StockDetailsScreen(stockId: stock.id,)),
         );
       },
     );

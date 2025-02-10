@@ -21,4 +21,20 @@ class StockRepository {
       throw Exception("Stock search failed: ${e.toString()}");
     }
   }
+
+  Future<StockModel> getStockDetails(int stockId) async {
+    final token = await SharedPrefs.getAuthToken();
+    final response = await dio.get(
+      'https://illuminate-production.up.railway.app/api/stocks/$stockId',
+      options: Options(headers: {"Authorization": "Bearer $token"}),
+    );
+
+    if (response.statusCode == 200) {
+      return StockModel.fromJson(response.data);
+    } else {
+      throw Exception("Failed to load stock details");
+    }
+  }
+
+
 }
