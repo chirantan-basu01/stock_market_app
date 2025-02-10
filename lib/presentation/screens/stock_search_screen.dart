@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 import '../blocs/auth_bloc/auth_bloc.dart';
 import '../blocs/auth_bloc/auth_event.dart';
 import '../blocs/stock_bloc/stock_bloc.dart';
 import '../blocs/stock_bloc/stock_event.dart';
 import '../blocs/stock_bloc/stock_state.dart';
+import '../widgets/custom_search_bar.dart';
 import '../widgets/stock_item.dart';
 import 'login_screen.dart';
 
@@ -18,19 +20,10 @@ class StockSearchScreen extends StatefulWidget {
 class _StockSearchScreenState extends State<StockSearchScreen> {
   final TextEditingController searchController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
-
-    searchController.addListener(() {
-      final query = searchController.text;
-      if (query.isEmpty) {
-        context.read<StockBloc>().add(ClearStocks());
-      } else {
-        searchStocks(context);
-      }
-    });
+    searchController.addListener(() => searchStocks(searchController.text));
   }
 
   @override
@@ -39,9 +32,7 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
     super.dispose();
   }
 
-
-  void searchStocks(BuildContext context) {
-    final query = searchController.text;
+  void searchStocks(String query) {
     if (query.isEmpty) {
       context.read<StockBloc>().add(ClearStocks());
     } else {
@@ -52,94 +43,105 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Stock Search",
-            style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white)),
+        title: const Text("Stock Search", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: Colors.white)),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () {
               context.read<AuthBloc>().add(Logout());
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
             },
           ),
         ],
         backgroundColor: Colors.blueAccent,
-        elevation: 0,
+        elevation: 4,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue.shade50, Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: CustomSearchBar(controller: searchController, onChanged: searchStocks),
           ),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: searchController,
-                onChanged: (_) => searchStocks(context),
-                decoration: InputDecoration(
-                  labelText: "Search Stocks",
-                  prefixIcon:
-                      const Icon(Icons.search, color: Colors.blueAccent),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
+          Expanded(
+            child: BlocBuilder<StockBloc, StockState>(
+              builder: (context, state) {
+                if (state is StockLoading) {
+                  return _buildLoadingShimmer();
+                } else if (state is StockFailure) {
+                  return _buildErrorState(state.error);
+                } else if (state is StockSuccess) {
+                  return _buildStockList(state);
+                }
+                return _buildEmptyState();
+              },
             ),
-            Expanded(
-              child: BlocBuilder<StockBloc, StockState>(
-                builder: (context, state) {
-                  if (state is StockLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is StockFailure) {
-                    return Center(
-                      child: Text(state.error,
-                          style:
-                              const TextStyle(color: Colors.red, fontSize: 16)),
-                    );
-                  } else if (state is StockSuccess) {
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 5),
-                      itemCount: state.stocks.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 4,
-                          child: StockItem(stock: state.stocks[index]),
-                        );
-                      },
-                    );
-                  }
-                  return const Center(
-                    child: Text("Search for stocks",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w500)),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildLoadingShimmer() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: 6,
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          child: Container(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, color: Colors.redAccent, size: 50),
+          const SizedBox(height: 10),
+          Text(error, style: const TextStyle(color: Colors.red, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/no_data.png', height: 200),
+          const SizedBox(height: 20),
+          const Text("Search for stocks", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStockList(StockSuccess state) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      itemCount: state.stocks.length,
+      itemBuilder: (context, index) {
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          elevation: 4,
+          child: StockItem(stock: state.stocks[index]),
+        );
+      },
     );
   }
 }

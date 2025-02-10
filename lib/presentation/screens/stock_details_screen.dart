@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../blocs/stock_details_bloc/stock_details_bloc.dart';
 
@@ -28,7 +29,7 @@ class StockDetailsScreen extends StatelessWidget {
       body: BlocBuilder<StockDetailsBloc, StockDetailsState>(
         builder: (context, state) {
           if (state is StockDetailsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return _buildLoadingShimmer();
           } else if (state is StockDetailsLoaded) {
             final stock = state.stock;
             return SingleChildScrollView(
@@ -152,4 +153,27 @@ class StockDetailsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+
+
+Widget _buildLoadingShimmer() {
+  return ListView.builder(
+    padding: const EdgeInsets.all(16),
+    itemCount: 6,
+    itemBuilder: (context, index) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+    },
+  );
 }
