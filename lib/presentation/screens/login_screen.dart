@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialPageRoute(
                   builder: (context) => const StockSearchScreen()),
             );
-          } else if (state is AuthFailure) {
+          } else if (state is AuthFailure && state.isLoginAttempted) {
             SnackbarHelper.showSnackbar(context,
                 message: "Login failed!", backgroundColor: Colors.blue);
           }

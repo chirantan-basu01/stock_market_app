@@ -20,8 +20,9 @@ class AuthSuccess extends AuthState {
 
 class AuthFailure extends AuthState {
   final String error;
+  final bool isLoginAttempted;
 
-  AuthFailure({required this.error});
+  AuthFailure({required this.error, this.isLoginAttempted = false});
 
   @override
   List<Object?> get props => [error];

@@ -27,7 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await SharedPrefs.saveAuthToken(token);
         emit(AuthSuccess(token: token));
       } catch (e) {
-        emit(AuthFailure(error: e.toString()));
+        emit(AuthFailure(error: e.toString(), isLoginAttempted: true));
       }
     });
 
