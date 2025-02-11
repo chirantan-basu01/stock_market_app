@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../data/models/stock_model.dart';
 import '../blocs/auth_bloc/auth_bloc.dart';
 import '../blocs/auth_bloc/auth_event.dart';
 import '../blocs/stock_bloc/stock_bloc.dart';
@@ -75,69 +78,75 @@ class _StockSearchScreenState extends State<StockSearchScreen> {
             child: BlocBuilder<StockBloc, StockState>(
               builder: (context, state) {
                 if (state is StockLoading) {
-                  return _buildLoadingShimmer();
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: 6,
+                    itemBuilder: (context, index) {
+                      return Shimmer.fromColors(
+                        baseColor: Colors.grey.shade300,
+                        highlightColor: Colors.grey.shade100,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      );
+                    },
+                  );
                 } else if (state is StockFailure) {
                   SnackbarHelper.showSnackbar(context,
                       message: "Unexpected Error Occurred !",
                       backgroundColor: Colors.blue);
+                  return const Center(child: Text("Error loading data"));
                 } else if (state is StockSuccess) {
-                  return ListView.builder(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    itemCount: state.stocks.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        elevation: 4,
-                        child: StockItem(stock: state.stocks[index]),
-                      );
-                    },
-                  );
+                  log('Stocks::::: ${state.stocks.isEmpty}');
+
+                  if (state.stocks.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No stocks found",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey),
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
+                      itemCount: state.stocks.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15)),
+                          elevation: 4,
+                          child: StockItem(stock: state.stocks[index]),
+                        );
+                      },
+                    );
+                  }
                 }
-                return _buildEmptyState();
+                return const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 20),
+                      Text("Search for stocks",
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey)),
+                    ],
+                  ),
+                );
               },
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoadingShimmer() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 6,
-      itemBuilder: (context, index) {
-        return Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/no_data.png', height: 200),
-          const SizedBox(height: 20),
-          const Text("Search for stocks",
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey)),
         ],
       ),
     );
